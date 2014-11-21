@@ -34,7 +34,7 @@
 #include "patricia.h"
 
 struct patricia *patricia_add(struct patricia *root, struct patricia *node) {
-    struct patricia **branch = &root;
+    struct patricia **branch = root ? &root : &node;
     size_t child_offset, parent_offset = 0;
 
     do {
@@ -62,16 +62,52 @@ struct patricia *patricia_add(struct patricia *root, struct patricia *node) {
     return root;
 }
 
-struct patricia *patricia_get(struct patricia *node, struct patricia *prefix) {
+struct patricia *patricia_remove(struct patricia *root, struct patricia *node) {
+    struct patricia **branch = &root, *parent = NULL;
+    size_t offset = 0;
+
+    while (*branch != node && (*branch)->offset > offset) {
+        parent = *branch;
+        offset = parent->offset;
+        branch = parent->next + patricia_prefix_bit(node, offset);
+    }
+
+    if (*branch != node && ((*branch)->length != node->length || memcmp((*branch)->prefix, node->prefix, node->length) != 0)) {
+        return root;
+    }
+
+    size_t bit = patricia_prefix_bit(*branch, node->offset);
+    do {
+        node = node->next[bit];
+        bit = patricia_prefix_bit(*branch, node->offset);
+    } while (*branch != node->next[bit]);
+
+    if (node == *branch) {
+        node = node->next[1-bit] != node ? node->next[1-bit]
+             : node->next[bit-0] != node ? node->next[bit-0]
+             : parent;
+    }
+
+    node->offset = (*branch)->offset;
+    node->next[1-bit] = (*branch)->next[1-bit];
+    node->next[bit-0] = (*branch)->next[bit-0] != (*branch)
+                      ? (*branch)->next[bit-0]
+                      : node;
+
+    *branch = node;
+    return root;
+}
+
+struct patricia *patricia_get(struct patricia *root, struct patricia *node) {
     size_t bit, offset;
 
     do {
-        offset = node->offset;
-        bit = patricia_prefix_bit(prefix, offset);
-        node = node->next[bit];
-    } while (offset < node->offset);
+        offset = root->offset;
+        bit = patricia_prefix_bit(node, offset);
+        root = root->next[bit];
+    } while (offset < root->offset);
 
-    return node->length == prefix->length && memcmp(node->prefix, prefix->prefix, prefix->length) == 0 ? node : NULL;
+    return root->length == node->length && memcmp(root->prefix, node->prefix, node->length) == 0 ? root : NULL;
 }
 
 size_t patricia_prefix_compare(struct patricia *p1, struct patricia *p2, size_t offset) {

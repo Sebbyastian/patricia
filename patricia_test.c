@@ -101,6 +101,51 @@ int main(void) {
     assert(patricia_get(root, i) == i || patricia_inspect(root, 0));
     assert(patricia_get(root, n) == n || patricia_inspect(root, 0));
     patricia_inspect(root, 0);
+
+    root = patricia_remove(root, c);
+    assert(patricia_get(root, a) == a || patricia_inspect(root, 0));
+    assert(patricia_get(root, s) == s || patricia_inspect(root, 0));
+    assert(patricia_get(root, e) == e || patricia_inspect(root, 0));
+    assert(patricia_get(root, r) == r || patricia_inspect(root, 0));
+    assert(patricia_get(root, c) == NULL || patricia_inspect(root, 0));
+    assert(patricia_get(root, h) == h || patricia_inspect(root, 0));
+    assert(patricia_get(root, i) == i || patricia_inspect(root, 0));
+    assert(patricia_get(root, n) == n || patricia_inspect(root, 0));
+    patricia_inspect(root, 0);
+
+    root = patricia_remove(root, a);
+    assert(patricia_get(root, a) == NULL || patricia_inspect(root, 0));
+    assert(patricia_get(root, s) == s || patricia_inspect(root, 0));
+    assert(patricia_get(root, e) == e || patricia_inspect(root, 0));
+    assert(patricia_get(root, r) == r || patricia_inspect(root, 0));
+    assert(patricia_get(root, c) == NULL || patricia_inspect(root, 0));
+    assert(patricia_get(root, h) == h || patricia_inspect(root, 0));
+    assert(patricia_get(root, i) == i || patricia_inspect(root, 0));
+    assert(patricia_get(root, n) == n || patricia_inspect(root, 0));
+    patricia_inspect(root, 0);
+
+    root = patricia_remove(root, s);
+    assert(patricia_get(root, a) == NULL || patricia_inspect(root, 0));
+    assert(patricia_get(root, s) == NULL || patricia_inspect(root, 0));
+    assert(patricia_get(root, e) == e || patricia_inspect(root, 0));
+    assert(patricia_get(root, r) == r || patricia_inspect(root, 0));
+    assert(patricia_get(root, c) == NULL || patricia_inspect(root, 0));
+    assert(patricia_get(root, h) == h || patricia_inspect(root, 0));
+    assert(patricia_get(root, i) == i || patricia_inspect(root, 0));
+    assert(patricia_get(root, n) == n || patricia_inspect(root, 0));
+    patricia_inspect(root, 0);
+
+    root = patricia_remove(root, h);
+    assert(patricia_get(root, a) == NULL || patricia_inspect(root, 0));
+    assert(patricia_get(root, s) == NULL || patricia_inspect(root, 0));
+    assert(patricia_get(root, e) == e || patricia_inspect(root, 0));
+    assert(patricia_get(root, r) == r || patricia_inspect(root, 0));
+    assert(patricia_get(root, c) == NULL || patricia_inspect(root, 0));
+    assert(patricia_get(root, h) == NULL || patricia_inspect(root, 0));
+    assert(patricia_get(root, i) == i || patricia_inspect(root, 0));
+    assert(patricia_get(root, n) == n || patricia_inspect(root, 0));
+    patricia_inspect(root, 0);
+
 #endif
 #ifdef TEST2
     struct patricia *smile =   default_prefixed_ptrie(bar, "smile"); bar++;
@@ -208,6 +253,7 @@ int main(void) {
     patricia_inspect(root, 0);
 #endif
 
-    getchar();
+    puts("PATRICIA tests completed successfully");
+    puts("-------------------------------------");
     return 0;
 }

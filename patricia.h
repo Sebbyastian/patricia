@@ -32,13 +32,17 @@
 #include <stddef.h>
 
 struct patricia {
-    struct patricia *next[2];
+    union {
+        struct patricia *next[2];
+        size_t next_diff[2];
+    };
     char *prefix;
     size_t offset;
     size_t length;
 };
 
 struct patricia *patricia_add(struct patricia *, struct patricia *);
+struct patricia *patricia_remove(struct patricia *, struct patricia *);
 struct patricia *patricia_get(struct patricia *, struct patricia *);
 size_t patricia_prefix_compare(struct patricia *, struct patricia *, size_t);
 size_t patricia_prefix_bit(struct patricia *, size_t);

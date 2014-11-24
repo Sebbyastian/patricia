@@ -47,6 +47,8 @@ int main(void) {
     struct patricia *root;
 
 #ifdef TEST1
+    puts("TEST1 running...");
+
     struct patricia *s = default_prefixed_ptrie(bar, "s"); bar++;
     struct patricia *e = default_prefixed_ptrie(bar, "e"); bar++;
     struct patricia *a = default_prefixed_ptrie(bar, "a"); bar++;
@@ -100,54 +102,50 @@ int main(void) {
     assert(patricia_get(root, h) == h || patricia_inspect(root, 0));
     assert(patricia_get(root, i) == i || patricia_inspect(root, 0));
     assert(patricia_get(root, n) == n || patricia_inspect(root, 0));
-    patricia_inspect(root, 0);
 
     root = patricia_remove(root, c);
     assert(patricia_get(root, a) == a || patricia_inspect(root, 0));
     assert(patricia_get(root, s) == s || patricia_inspect(root, 0));
     assert(patricia_get(root, e) == e || patricia_inspect(root, 0));
     assert(patricia_get(root, r) == r || patricia_inspect(root, 0));
-    assert(patricia_get(root, c) == NULL || patricia_inspect(root, 0));
+    assert(!patricia_contains(root, c) || patricia_inspect(root, 0));
     assert(patricia_get(root, h) == h || patricia_inspect(root, 0));
     assert(patricia_get(root, i) == i || patricia_inspect(root, 0));
     assert(patricia_get(root, n) == n || patricia_inspect(root, 0));
-    patricia_inspect(root, 0);
 
     root = patricia_remove(root, a);
-    assert(patricia_get(root, a) == NULL || patricia_inspect(root, 0));
+    assert(!patricia_contains(root, a) || patricia_inspect(root, 0));
     assert(patricia_get(root, s) == s || patricia_inspect(root, 0));
     assert(patricia_get(root, e) == e || patricia_inspect(root, 0));
     assert(patricia_get(root, r) == r || patricia_inspect(root, 0));
-    assert(patricia_get(root, c) == NULL || patricia_inspect(root, 0));
+    assert(!patricia_contains(root, c) || patricia_inspect(root, 0));
     assert(patricia_get(root, h) == h || patricia_inspect(root, 0));
     assert(patricia_get(root, i) == i || patricia_inspect(root, 0));
     assert(patricia_get(root, n) == n || patricia_inspect(root, 0));
-    patricia_inspect(root, 0);
 
     root = patricia_remove(root, s);
-    assert(patricia_get(root, a) == NULL || patricia_inspect(root, 0));
-    assert(patricia_get(root, s) == NULL || patricia_inspect(root, 0));
+    assert(!patricia_contains(root, a) || patricia_inspect(root, 0));
+    assert(!patricia_contains(root, s) || patricia_inspect(root, 0));
     assert(patricia_get(root, e) == e || patricia_inspect(root, 0));
     assert(patricia_get(root, r) == r || patricia_inspect(root, 0));
-    assert(patricia_get(root, c) == NULL || patricia_inspect(root, 0));
+    assert(!patricia_contains(root, c) || patricia_inspect(root, 0));
     assert(patricia_get(root, h) == h || patricia_inspect(root, 0));
     assert(patricia_get(root, i) == i || patricia_inspect(root, 0));
     assert(patricia_get(root, n) == n || patricia_inspect(root, 0));
-    patricia_inspect(root, 0);
 
     root = patricia_remove(root, h);
-    assert(patricia_get(root, a) == NULL || patricia_inspect(root, 0));
-    assert(patricia_get(root, s) == NULL || patricia_inspect(root, 0));
+    assert(!patricia_contains(root, a) || patricia_inspect(root, 0));
+    assert(!patricia_contains(root, s) || patricia_inspect(root, 0));
     assert(patricia_get(root, e) == e || patricia_inspect(root, 0));
     assert(patricia_get(root, r) == r || patricia_inspect(root, 0));
-    assert(patricia_get(root, c) == NULL || patricia_inspect(root, 0));
-    assert(patricia_get(root, h) == NULL || patricia_inspect(root, 0));
+    assert(!patricia_contains(root, c) || patricia_inspect(root, 0));
+    assert(!patricia_contains(root, h) || patricia_inspect(root, 0));
     assert(patricia_get(root, i) == i || patricia_inspect(root, 0));
     assert(patricia_get(root, n) == n || patricia_inspect(root, 0));
-    patricia_inspect(root, 0);
-
 #endif
 #ifdef TEST2
+    puts("TEST2 running...");
+
     struct patricia *smile =   default_prefixed_ptrie(bar, "smile"); bar++;
     struct patricia *smiled =  default_prefixed_ptrie(bar, "smiled"); bar++;
     struct patricia *smiles =  default_prefixed_ptrie(bar, "smiles"); bar++;
@@ -167,9 +165,15 @@ int main(void) {
     assert(patricia_get(root, smiled) == smiled || patricia_inspect(root, 0));
     assert(patricia_get(root, smiles) == smiles || patricia_inspect(root, 0));
     assert(patricia_get(root, smiling) == smiling || patricia_inspect(root, 0));
-    patricia_inspect(root, 0);
+
+    root = patricia_remove(root, smile);
+    assert(patricia_get(root, smiled) == smiled || patricia_inspect(root, 0));
+    assert(patricia_get(root, smiles) == smiles || patricia_inspect(root, 0));
+    assert(patricia_get(root, smiling) == smiling || patricia_inspect(root, 0));
 #endif
 #ifdef TEST3
+    puts("TEST3 running...");
+
     struct patricia *now_node =    default_prefixed_ptrie(bar, "now"); bar++;
     struct patricia *is_node =     default_prefixed_ptrie(bar, "is"); bar++;
     struct patricia *the_node =    default_prefixed_ptrie(bar, "the"); bar++;
@@ -204,9 +208,10 @@ int main(void) {
     assert(patricia_get(root, time_node) == time_node || patricia_inspect(root, 0));
     assert(patricia_get(root, for_node) == for_node || patricia_inspect(root, 0));
     assert(patricia_get(root, theory_node) == theory_node || patricia_inspect(root, 0));
-    patricia_inspect(root, 0);
 #endif
 #ifdef TEST4
+    puts("TEST4 running...");
+
     struct patricia *some_node =           default_prefixed_ptrie(bar, "SOME"); bar++;
     struct patricia *abacus_node =         default_prefixed_ptrie(bar, "ABACUS"); bar++;
     struct patricia *something_node =      default_prefixed_ptrie(bar, "SOMETHING"); bar++;
@@ -250,7 +255,6 @@ int main(void) {
     assert(patricia_get(root, &(struct patricia){ .prefix = "ABRACADABRA", .length = 11 }) == abracadabra_node || patricia_inspect(root, 0));
     assert(patricia_get(root, &(struct patricia){ .prefix = "THIS", .length = 4 }) == this_node || patricia_inspect(root, 0));
     assert(patricia_get(root, &(struct patricia){ .prefix = "SOMERSET", .length = 8 }) == somerset_node || patricia_inspect(root, 0));
-    patricia_inspect(root, 0);
 #endif
 
     puts("PATRICIA tests completed successfully");

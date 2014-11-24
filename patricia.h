@@ -46,5 +46,6 @@ struct patricia *patricia_remove(struct patricia *, struct patricia *);
 struct patricia *patricia_get(struct patricia *, struct patricia *);
 size_t patricia_prefix_compare(struct patricia *, struct patricia *, size_t);
 size_t patricia_prefix_bit(struct patricia *, size_t);
+int patricia_contains(struct patricia *, struct patricia *);
 int patricia_inspect(struct patricia *, size_t);
 #endif

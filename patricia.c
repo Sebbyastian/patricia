@@ -66,14 +66,10 @@ struct patricia *patricia_remove(struct patricia *root, struct patricia *node) {
     struct patricia **branch = &root, *parent = NULL;
     size_t offset = 0;
 
-    while (*branch != node && (*branch)->offset > offset) {
+    while (*branch != node) {
         parent = *branch;
         offset = parent->offset;
         branch = parent->next + patricia_prefix_bit(node, offset);
-    }
-
-    if (*branch != node && ((*branch)->length != node->length || memcmp((*branch)->prefix, node->prefix, node->length) != 0)) {
-        return root;
     }
 
     size_t bit = patricia_prefix_bit(*branch, node->offset);
@@ -81,18 +77,25 @@ struct patricia *patricia_remove(struct patricia *root, struct patricia *node) {
         node = node->next[bit];
         bit = patricia_prefix_bit(*branch, node->offset);
     } while (*branch != node->next[bit]);
-
-    if (node == *branch) {
-        node = node->next[1-bit] != node ? node->next[1-bit]
-             : node->next[bit-0] != node ? node->next[bit-0]
+    
+    int self_backreferencing = node == *branch;
+    if (self_backreferencing) {
+        node = node->next[1-bit] != node
+             ? node->next[1-bit]
              : parent;
     }
 
-    node->offset = (*branch)->offset;
-    node->next[1-bit] = (*branch)->next[1-bit];
-    node->next[bit-0] = (*branch)->next[bit-0] != (*branch)
-                      ? (*branch)->next[bit-0]
-                      : node;
+    if (node) {
+        node->offset = self_backreferencing
+                     ? node->offset
+                     : (*branch)->offset;
+        node->next[1-bit] = (*branch)->next[1-bit] != (*branch)
+                          ? (*branch)->next[1-bit]
+                          : node;
+        node->next[bit-0] = !self_backreferencing          ? (*branch)->next[bit-0]
+                          : node->next[bit-0] != (*branch) ? node->next[bit-0]
+                          : node;
+    }
 
     *branch = node;
     return root;
@@ -146,6 +149,14 @@ size_t patricia_prefix_bit(struct patricia *node, size_t offset) {
     }
 
     return (node->prefix[hi] >> (~offset / 2 % CHAR_BIT)) & 1;
+}
+
+int patricia_contains(struct patricia *base, struct patricia *key) {
+    return base &&
+           base->next[0] == key ||
+           base->next[1] == key ||
+          (base->next[0]->offset > base->offset && patricia_contains(base->next[0], key)) ||
+          (base->next[1]->offset > base->offset && patricia_contains(base->next[1], key));
 }
 
 int patricia_inspect(struct patricia *node, size_t level) {

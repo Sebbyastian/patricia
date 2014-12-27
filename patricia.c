@@ -103,6 +103,9 @@ struct patricia *patricia_remove(struct patricia *root, struct patricia *node) {
 
 struct patricia *patricia_get(struct patricia *root, struct patricia *node) {
     size_t bit, offset;
+    if (root == NULL) {
+        return NULL;
+    }
 
     do {
         offset = root->offset;

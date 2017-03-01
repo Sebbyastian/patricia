@@ -36,7 +36,10 @@ struct patricia {
         struct patricia *next[2];
         size_t next_diff[2];
     };
-    char *prefix;
+    union {
+        char *prefix;
+        size_t prefix_diff;
+    };
     size_t offset;
     size_t length;
 };

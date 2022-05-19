@@ -31,17 +31,23 @@
 #define __PATRICIA_H__
 #include <stddef.h>
 
+typedef size_t patricia_node[4];
+enum patricia_node_memb {
+    next,
+    offset,
+    length,
+    prefix,
+    prefix_diff=prefix
+};
+
 struct patricia {
-    union {
-        struct patricia *next[2];
-        size_t next_diff[2];
-    };
+    size_t next;
+    size_t offset;
+    size_t length;
     union {
         char *prefix;
         size_t prefix_diff;
     };
-    size_t offset;
-    size_t length;
 };
 
 struct patricia *patricia_add(struct patricia *, struct patricia *);
